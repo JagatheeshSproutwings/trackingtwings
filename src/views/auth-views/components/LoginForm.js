@@ -5,7 +5,7 @@ import { MailOutlined, LockOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import { GoogleSVG, FacebookSVG } from 'assets/svg/icon';
 import CustomIcon from 'components/util-components/CustomIcon';
-
+import api from 'configs/ApiConfig';
 import { LoginApi } from './Api';
 import { 
 	signIn, 
@@ -40,26 +40,11 @@ export const LoginForm = props => {
 		allowRedirect = true
 	} = props
 
-	
-	
-	// const onLogin = async values => {
-	// 	//signIn(values);
-	// 	await LoginApi(values).then(data=>{
-	// 		showLoading()
 
-	// 		alert("test");
-	// 	})
-	// 	.catch(data=>{
-	// 		console.log(data,"error")
-	// 	})
-	// 	//console.log(LoginApi(values));
-
-	// 	// showLoading()
-	// 	// signIn(values);
-	// };
-	const onLogin = () => {
+	const onLogin = (values) => {
 		showLoading()
-		signIn()
+		signIn(values)
+		
 	}
 	const onGoogleLogin = () => {
 		showLoading()
@@ -73,7 +58,7 @@ export const LoginForm = props => {
 
 	useEffect(() => {
 		if (token !== null && allowRedirect) {
-			navigate(redirect)
+			navigate('app/dashboard/admin')
 		}
 		if (showMessage) {
 			const timer = setTimeout(() => hideAuthMessage(), 3000)

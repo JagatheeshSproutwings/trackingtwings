@@ -1,4 +1,4 @@
-import { SIDE_NAV_LIGHT, NAV_TYPE_SIDE, DIR_LTR } from 'constants/ThemeConstant';
+import { SIDE_NAV_LIGHT, NAV_TYPE_SIDE, NAV_TYPE_TOP,DIR_LTR } from 'constants/ThemeConstant';
 import { env } from './EnvironmentConfig'
 
 export const APP_NAME = 'Trackingwings';
@@ -10,7 +10,8 @@ export const AUTHENTICATED_ENTRY = `${APP_PREFIX_PATH}/dashboard/admin`;
 export const UNAUTHENTICATED_ENTRY = '/login'
 
 export const THEME_CONFIG = {
-	navCollapsed: false,
+	navCollapsed: true,
+	//sideNavTheme: SIDE_NAV_LIGHT,
 	sideNavTheme: SIDE_NAV_LIGHT,
 	locale: 'en',
 	navType: NAV_TYPE_SIDE,

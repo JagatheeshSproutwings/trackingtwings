@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes as RouterRoutes, Route, Navigate } from 'react-router-dom';
 import { AUTHENTICATED_ENTRY } from 'configs/AppConfig';
-import { protectedRoutes, publicRoutes } from 'configs/RoutesConfig';
+import { protectedRoutes, publicRoutes,customerRoutes } from 'configs/RoutesConfig';
 import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
 import AppRoute from './AppRoute';
@@ -12,7 +12,7 @@ const Routes = () => {
 		<RouterRoutes>
 			<Route path="/" element={<ProtectedRoute />}>
 				<Route path="/" element={<Navigate replace to={AUTHENTICATED_ENTRY} />} />
-				<Route path="home" element={<p>Welome</p>} />
+				<Route path="home" element={<p>Welcome</p>} />
 				{protectedRoutes.map((route, index) => {
 					return (
 						<Route 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dropdown, Avatar } from 'antd';
-import { useDispatch } from 'react-redux'
+import { useDispatch,useSelector } from 'react-redux'
 import { 
 	UserOutlined,
 	EditOutlined, 
@@ -15,10 +15,10 @@ import { signOut } from 'store/slices/authSlice';
 import styled from '@emotion/styled';
 import { FONT_WEIGHT, MEDIA_QUERIES, SPACER, FONT_SIZES } from 'constants/ThemeConstant'
 
+
 const Icon = styled.div(() => ({
 	fontSize: FONT_SIZES.LG
 }))
-
 const Profile = styled.div(() => ({
 	display: 'flex',
 	alignItems: 'center'
@@ -48,13 +48,16 @@ const Title = styled.span(() => ({
 // )
 
 const MenuItemSignOut = (props) => {
+    const token = useSelector(state => state.auth);
 
 	const dispatch = useDispatch();
-
+	
 	const handleSignOut = () => {
+		localStorage.clear()
 		dispatch(signOut())
+		
 	}
-
+	
 	return (
 		<div onClick={handleSignOut}>
 			<Flex alignItems="center" gap={SPACER[2]} >
@@ -75,7 +78,10 @@ const items = [
 ]
 
 export const NavProfile = ({mode}) => {
+	const token = useSelector(state => state.auth);
+	console.log("Navbar"+token);
 	return (
+		
 		<Dropdown placement="bottomRight" menu={{items}} trigger={["click"]}>
 			<NavItem mode={mode}>
 				<Profile>
@@ -83,15 +89,15 @@ export const NavProfile = ({mode}) => {
         backgroundColor: '#87d068',
       }} size={{
       xs: 24,
-      sm: 32,
-      md: 40,
-      lg: 64,
-      xl: 60,
-      xxl: 65,
+      sm: 27,
+      md: 35,
+      lg: 40,
+      xl: 50,
+      xxl: 55,
     }} icon={<UserOutlined />}  />
 					<UserInfo className="profile-text">
-						<Name>Sproutwings Telematics</Name>
-						<Title>Super Admin</Title>
+						<Name>{token?.user_info?.name}</Name>
+						<Title>{token?.user_info?.email}</Title>
 					</UserInfo>
 				</Profile>
 			</NavItem>

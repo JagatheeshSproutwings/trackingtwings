@@ -1,9 +1,11 @@
 import axios from 'axios';
 
-const baseURL = 'http://127.0.0.1:8000/api/'; 
+const baseURL = 'http://148.113.16.25/twings_app/public/api/'; 
+// const baseURL = 'http://localhost/twings_app/public/api/'; 
 
 const api = axios.create({
   baseURL: baseURL,
+  cors:'*'
 });
 
 export const getToken = () => {
@@ -15,6 +17,12 @@ export const setTokenInHeaders = () => {
   if (token) {
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   } else {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('user_name');
+    localStorage.removeItem('id');
+    localStorage.removeItem('email');
+    localStorage.removeItem('user_info');
     delete api.defaults.headers.common['Authorization'];
   }
 };

@@ -6,7 +6,7 @@ import { AUTHENTICATED_ENTRY } from 'configs/AppConfig'
 const PublicRoute = () => {
 
 	const { token } = useSelector(state => state.auth)
-  
+	const role = localStorage.getItem('role');
 	return token ? <Navigate to={AUTHENTICATED_ENTRY} /> : <Outlet/>
 }
 

@@ -1,11 +1,17 @@
-import React, { useState } from 'react'
-import {Form,Row,Col,Card,Table,Select,Input,Badge,Avatar,Divider} from 'antd'
+import React, { useState,useEffect } from 'react'
+import {Form,Row,Col,Card,Table,Select,Input,Badge,Avatar,Divider,Button,List,Space } from 'antd'
 import {MapContainer,TileLayer,Marker,Popup,LayersControl} from 'react-leaflet'
 import { WHITE } from 'constants/ThemeConstant'
-
+import { useSelector } from 'react-redux'
+import api from 'configs/ApiConfig'
+import { CarOutlined } from '@ant-design/icons';
+const { Option } = Select
 export const Admin = () => {
     const [CustomerId,SetCustomerId] = useState("");
-    
+    const [UserDetail,SetUserDetail] = useState({});
+    const [VehicleDetail,SetVehicleDetail] = useState("");
+    const token = useSelector(state => state.auth);
+    console.log(token);
     const position = [11.0467, 76.9254]
     const { BaseLayer } = LayersControl;
     const tableColumns = [
@@ -22,63 +28,66 @@ export const Admin = () => {
     ];
     const handleChange = (values) =>{
         console.log(values);
+        user_list(values);
+
     }
     
+      useEffect(()=>{
+        vehicle_list();
+      },[])
+
+      const  vehicle_list = async () =>{
+        const vehicle_data = await api.get("vehicle_count");
+        console.log(vehicle_data.data);
+        SetVehicleDetail(vehicle_data.data);
+        // SetCustomerId(user_data.data.message);
+      } 
+const  user_list = async (values) =>{
+
+    const user_data = await api.get("user/show/"+values);
+    console.log(user_data.data);
+    SetUserDetail(user_data.data.data);
+    SetCustomerId(user_data.data.message);
+} 
+
 return(
     <>
-    <Row gutter={6} >
-        <Col xs={24} sm={24} lg={6} >
-            <Row gutter={6}>
-                <Col sm={6} lg={24}>
-                    <Card title="Customer">
-                        <Form name="customer-form" layout="inline">
-                            <Col xs={12}>
-                            <Form.Item name="dealer_id"  rules={[{required:true,message:'Dealer Value is Required!'}]}>
-                                <Select showSearch onChange={handleChange} placeholder="Dealer/Reseller">
-                                    <option value="1" selected>Acute</option>
-                                </Select>
-                            </Form.Item>
-                            </Col>
-                            <Col xs={12}>
-                            <Form.Item name="customer_id"  rules={[{required:true,message:'Customer Value is Required!'}]}>
-                                <Select showSearch onChange={handleChange} placeholder="Customer">
-                                    <option value="1">Customer 1</option>
-                                    <option value="2">Customer 2</option>
-                                    <option value="3">Customer 3</option>
-                                    <option value="4">Customer 4</option>
-                                </Select>
-                            </Form.Item>
-                            </Col>
-                            
-                        </Form>
-                    </Card>
-                </Col>
-                <Col sm={6} lg={24} style={{height:'100vh'}}>
-                    <Card title="Vehcile Info" >
-                        <div className="mt-1">
-                            <Row gutter={6} >                        
-                                <Col style={{ width: '20%' }}><Card style={{backgroundColor: '#0000FF',color:WHITE,textAlign:"center"}}>All <Badge size="large" count={10} /> </Card></Col>
-                                <Col style={{ width: '20%' }}><Card style={{backgroundColor: 'red',color:WHITE,textAlign:"center"}}>   Parking <Badge size="large" count={2} /></Card></Col>
-                                <Col style={{ width: '20%' }}><Card style={{backgroundColor: '#FFA500',color:WHITE,textAlign:"center"}}>Idle <Badge size="large" count={1} /></Card></Col>
-                                <Col style={{ width: '20%' }}><Card style={{backgroundColor: '#008000',color:WHITE,textAlign:"center"}}>Moving <Badge size="large" count={2} /></Card></Col>
-                                <Col style={{ width: '20%' }}><Card style={{backgroundColor: 'grey',color:WHITE,textAlign:"center"}}>Offline <Badge size="large" count={5} /></Card></Col>
-                                <Col style={{ width: '20%' }}><Card style={{backgroundColor: 'grey',color:WHITE,textAlign:"center"}}>Expiry <Badge size="large" count={5} /></Card></Col>
-                            </Row>
-                            <div className="table-responsive">
-                            <Table bordered  
-                                columns={tableColumns} 
-                                rowKey='id' 
-                                pagination={true}></Table>
-                            </div>
-                            
-                        </div>
-                    </Card>
-                </Col>
-            </Row>
-        </Col>
-        <Col xs={24} sm={24} lg={18}>
-            <Card title="Vehicles">
-                <MapContainer center={position} zoom={13} scrollWheelZoom={true} >
+    <Row gutter={16}>
+    <Col span={4}>
+      <Card title="All" size='small' bordered={false}>
+        {VehicleDetail?.data?.total_vehicles}
+      </Card>
+    </Col>
+    <Col span={4}>
+      <Card title="Idle" size='small' bordered={false}>
+      {VehicleDetail?.data?.idle}
+      </Card>
+    </Col>
+    <Col span={4}>
+      <Card title="Moving" size='small' bordered={false}>
+      {VehicleDetail?.data?.running}
+      </Card>
+    </Col>
+    <Col span={4}>
+      <Card title="Parking"  size='small' bordered={false}>
+      {VehicleDetail?.data?.stop}
+      </Card>
+    </Col>
+    <Col span={4}>
+      <Card title="No Network" size='small' bordered={false}>
+      {VehicleDetail?.data?.no_data}
+      </Card>
+    </Col>
+    <Col span={4}>
+      <Card title="Expired" size='small' bordered={false}>
+      {VehicleDetail?.data?.expired_vehicles}
+      </Card>
+    </Col>
+
+    </Row>
+    <Row>
+        <Col span={18}>
+        <MapContainer center={position} zoom={13} scrollWheelZoom={true} >
                 <LayersControl>
                     <BaseLayer checked name="OpenStreetMap">
                         <TileLayer
@@ -101,7 +110,9 @@ return(
                     </BaseLayer>
                 </LayersControl>
                 </MapContainer>
-            </Card>
+        </Col>
+        <Col span={6}>
+            <h2>Charts</h2>
         </Col>
     </Row>
     </>

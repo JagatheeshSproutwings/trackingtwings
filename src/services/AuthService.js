@@ -1,15 +1,12 @@
 import fetch from 'auth/FetchInterceptor'
-import axios from 'axios'
-import api, { setTokenInHeaders } from 'configs/apiConfig';
+import api, { setTokenInHeaders } from 'configs/ApiConfig';
 
 const AuthService = {}
 
 
 AuthService.login = function (data)
 {
-	
-	const response = api.post("login",data).then(data=>data).catch(data=>data);
-
+	const response = api.post("login",data).then(res => { return res}).catch(err => { return err});
 	return response;
 }
 
@@ -22,6 +19,7 @@ AuthService.register = function (data) {
 }
 
 AuthService.logout = function () {
+	
 	return fetch({
 		url: '/auth/logout',
 		method: 'post'

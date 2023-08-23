@@ -1,11 +1,37 @@
-import React, {useState} from 'react'
+import React, {useState,useEffect} from 'react'
 import {Table,Button,Card,Drawer,Select, Input,Form,DatePicker } from 'antd'
 import Flex from 'components/shared-components/Flex'
 import { PlusOutlined,FileExcelOutlined,SearchOutlined } from '@ant-design/icons';
 import utils from 'utils'
+import { useSelector } from 'react-redux'
+import api from 'configs/ApiConfig'
 const { Option } = Select
 const { RangePicker } = DatePicker;
 export const IdleReport = () => {
+
+  const [vehicles,SetVehicles] = useState({});
+  const [idleList,SetIdleList] = useState({});
+  const token = useSelector(state => state.auth);
+  console.log(token);
+  const handleChange = (values) =>{
+    console.log(values);
+    idle_report(values);
+
+}
+  useEffect(()=>{
+    idle_report();
+  },[])
+  const  idle_report = async (values) =>{
+    const data = {
+      "start_day": "2023-08-07 00:00:00",
+      "end_day": "2023-08-18 00:00:00",
+      "vehicle_id": "1"
+    };
+    //const idle_data = await api.get("vehicle_count").then(res => { return res}).catch(err => { return err});
+     const idle_data = await api.post("get_idle_report/",data).then(res => { return res}).catch(err => { return err});
+    console.log(idle_data);
+    SetIdleList(idle_data);
+  }
   const tableColumns = [
     {
       title: 'S.No',
@@ -53,15 +79,16 @@ export const IdleReport = () => {
             </Select>
           </div>
 					<div className='mr-md-3 mr-3' >
-            <RangePicker showTime />
+            <RangePicker showTime  name="range_picker" format={"YYYY-MM-DD"} onChange={handleChange}/>
           </div>
 					<div className="mr-md-3 mb-3">
-						<Select mode="multiple"
+						<Select 
 							defaultValue="All" 
 							className="w-100" 
 							style={{ minWidth: 180 }} 
-							
+							name="vehicle_id"
 							placeholder="Vehicle"
+              onChange={handleChange}
 						>
 							<Option value="All">All</Option>
 							<Option value="1">TN01AB1234</Option>
@@ -70,7 +97,7 @@ export const IdleReport = () => {
 					</div>
 				
           <div className="mb-3">
-          <Button type="primary" success icon={<SearchOutlined/>} >Search</Button>
+          <Button type="primary" success icon={<SearchOutlined/>}  >Search</Button>
           </div>
           <div className="mb-3">
           <Button type="primary" success icon={<FileExcelOutlined/>} ghost>Export</Button>
@@ -80,7 +107,8 @@ export const IdleReport = () => {
                 
             </Flex>
       <div className="table-responsive">
-        <Table bordered columns={tableColumns}>
+        
+        <Table bordered columns={tableColumns} >
 
         </Table>
       </div>

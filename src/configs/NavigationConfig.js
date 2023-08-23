@@ -1,7 +1,6 @@
 import { DashboardOutlined,AppstoreOutlined,MailOutlined,ProfileOutlined,FileDoneOutlined,InfoCircleOutlined,DotChartOutlined,SettingOutlined } from '@ant-design/icons';
 import { APP_PREFIX_PATH } from 'configs/AppConfig'
 
-
 const dashBoardNavTree = [{
   key: 'dashboard',
   path: `${APP_PREFIX_PATH}/dashboards/`,
@@ -22,6 +21,14 @@ const dashBoardNavTree = [{
       key: 'dashboard.customer',
       path: `${APP_PREFIX_PATH}/dashboards/customer`,
       title: 'Customer',
+      icon: DashboardOutlined,
+      breadcrumb: false,
+      submenu: []
+    },
+    {
+      key: 'dashboard.single',
+      path: `${APP_PREFIX_PATH}/single_dashboard`,
+      title: 'Single Dashboard',
       icon: DashboardOutlined,
       breadcrumb: false,
       submenu: []
@@ -81,9 +88,9 @@ const userManagementNavTree = [{
     breadcrumb: false,
     submenu: []
   },{
-    key: 'permission',
-    path: `${APP_PREFIX_PATH}/user_management/permission`,
-    title: 'Permission',
+    key: 'user_management.permissions',
+    path: `${APP_PREFIX_PATH}/user_management/permissions`,
+    title: 'Permissions',
     breadcrumb: false,
     submenu: []
   },{
@@ -159,6 +166,14 @@ const reportNavTree = [{
       icon: '',
       breadcrumb: false,
       submenu: []
+    },
+    {
+      key: 'geofence_report',
+      path: `${APP_PREFIX_PATH}/reports/geofence_report`,
+      title: 'Geofence Report',
+      icon: '',
+      breadcrumb: false,
+      submenu: []
     }
   ]
   },{
@@ -199,6 +214,17 @@ const reportNavTree = [{
     }]
   }]
 }]
+const pointNavTree = [{
+  key: 'points',
+  path: `${APP_PREFIX_PATH}/points`,
+  title: 'Points',
+  icon: SettingOutlined,
+  breadcrumb: false,
+  isGroupTitle: false,
+  submenu: [
+
+  ]
+}]
 const settingNavTree = [{
   key: 'settings',
   path: `${APP_PREFIX_PATH}/settings`,
@@ -210,8 +236,9 @@ const settingNavTree = [{
 
   ]
 }]
+
 const navigationConfig = [
-  ...dashBoardNavTree,...vehcileManagementNavTree,...fuelManagementNavTree,...reportNavTree,...userManagementNavTree,...settingNavTree
+  ...dashBoardNavTree,...reportNavTree,...pointNavTree,...vehcileManagementNavTree,...fuelManagementNavTree,...userManagementNavTree,...settingNavTree
 ]
 
 export default navigationConfig;

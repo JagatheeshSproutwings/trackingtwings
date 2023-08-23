@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { SIDE_NAV_LIGHT, NAV_TYPE_SIDE } from "constants/ThemeConstant";
 import utils from 'utils'
 import { onMobileNavToggle } from 'store/slices/themeSlice';
-
+ 
 const { useBreakpoint } = Grid;
 
 const setLocale = (localeKey, isLocaleOn = true) =>

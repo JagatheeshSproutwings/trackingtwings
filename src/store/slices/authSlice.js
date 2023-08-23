@@ -2,24 +2,46 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { AUTH_TOKEN } from 'constants/AuthConstant';
 import FirebaseService from 'services/FirebaseService';
 import AuthService from 'services/AuthService';
-import api, { setTokenInHeaders } from 'configs/apiConfig';
+import api, { setTokenInHeaders } from 'configs/ApiConfig';
 
 export const initialState = {
 	loading: false,
 	message: '',
 	showMessage: false,
 	redirect: '',
-	token: AUTH_TOKEN||null
+	token: localStorage.getItem('token')||null,
+	user_info:{},
+
 }
 
 export const signIn = createAsyncThunk('auth/login',async (data, { rejectWithValue }) => {
 	const { email, password } = data
 	try {
-		const response = await api.post("login",{data});
-		console.log(response.data)
-		localStorage.setItem(AUTH_TOKEN,response.data)
-		return response;
+		const response = await AuthService.login({email, password})
+		
+		if(response.data.status_code===200)
+		{
+			const refresh_token = response.data.data.token;
+			const role_id = response.data.data.user.role_id;
+			const id = response.data.data.user.id;
+			const user_name = response.data.data.user.name;
+			const user_email = response.data.data.user.email;
+			const token = (response.data.data.user); 
+			console.log(token);
+			localStorage.setItem('token',refresh_token);
+			localStorage.setItem('role',role_id);
+			localStorage.setItem('user_name',user_name);
+			localStorage.setItem('id',id);
+			localStorage.setItem('email',user_email);
+			setTokenInHeaders();
+			
+			return {token,refresh_token};
+		}else{
+			return rejectWithValue(response.message?.response.message || 'Error')
+		}
+
 	} catch (err) {
+		localStorage.removeItem('token');
 		return rejectWithValue(err.response?.data?.message || 'Error')
 	}
 })
@@ -28,9 +50,16 @@ export const signUp = createAsyncThunk('auth/register',async (data, { rejectWith
 	const { email, password } = data
 	try {
 		const response = await AuthService.register({email, password})
-		const token = response.data.token;
-		localStorage.setItem(AUTH_TOKEN, token);
+		if(response.data.status_code===200)
+		{
+		const token = response.data.data.user;
+		const refresh_token = response.data.token;
+		localStorage.setItem(AUTH_TOKEN, refresh_token);
 		return token;
+		}else{
+			return rejectWithValue(response.message?.message || 'Error')
+		}
+		
 	} catch (err) {
 		return rejectWithValue(err.response?.data?.message || 'Error')
 	}
@@ -39,7 +68,13 @@ export const signUp = createAsyncThunk('auth/register',async (data, { rejectWith
 export const signOut = createAsyncThunk('auth/logout',async () => {
 	const response = await AuthService.signOut()
     //const response = await FirebaseService.signOutRequest()
-	localStorage.removeItem(AUTH_TOKEN);
+	localStorage.removeItem('token');
+	localStorage.removeItem('role');
+	localStorage.removeItem('user_name');
+	localStorage.removeItem('id');
+	localStorage.removeItem('email');
+	localStorage.removeItem('user_info');
+    setTokenInHeaders();
     return response.data
 })
 
@@ -73,7 +108,8 @@ export const authSlice = createSlice({
 		authenticated: (state, action) => {
 			state.loading = false
 			state.redirect = '/dashboard'
-			state.token = action.payload
+			state.token = action.payload.refresh_token.refresh_token
+			state.user_info = action.payload.refresh_token.token
 		},
 		showAuthMessage: (state, action) => {
 			state.message = action.payload
@@ -95,6 +131,7 @@ export const authSlice = createSlice({
 		signInSuccess: (state, action) => {
 			state.loading = false
 			state.token = action.payload
+			state.user_info = action.payload.refresh_token.token
 		}
 	},
 	extraReducers: (builder) => {
@@ -106,7 +143,9 @@ export const authSlice = createSlice({
 			.addCase(signIn.fulfilled, (state, action) => {
 				state.loading = false
 				state.redirect = '/dashboard'
-				state.token = action.payload
+				state.token = action.payload.refresh_token
+				state.user_info = action.payload.token
+				console.log(action.payload);
 			})
 			.addCase(signIn.rejected, (state, action) => {
 				state.message = action.payload
